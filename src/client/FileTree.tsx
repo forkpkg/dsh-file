@@ -125,7 +125,7 @@ export const FileTree = forwardRef<TreeRef, FileTreeProps>(function FileTree(
       const trimmed = name.trim();
       if (trimmed === '') return true; // empty = cancel silently (like VS Code)
       if (trimmed.includes('/')) {
-        onNotice('名称不能包含 /');
+        onNotice('Name cannot contain /');
         return false;
       }
       const target = `${editing.parent.replace(/\/$/, '')}/${trimmed}`;
@@ -133,13 +133,13 @@ export const FileTree = forwardRef<TreeRef, FileTreeProps>(function FileTree(
         if (editing.kind === 'directory') await unwrap(await remote.createDirectory(target));
         else await unwrap(await remote.createFile(target));
       } catch (error) {
-        onNotice(`创建失败: ${error instanceof Error ? error.message : String(error)}`);
+        onNotice(`Creation failed: ${error instanceof Error ? error.message : String(error)}`);
         return false; // keep the input open so the name can be fixed
       }
       await loadDir(editing.parent);
       setEditing(null);
       setSelected(target);
-      onNotice(editing.kind === 'directory' ? `已创建目录 ${trimmed}` : `已创建文件 ${trimmed}`);
+      onNotice(editing.kind === 'directory' ? `Created directory ${trimmed}` : `Created file ${trimmed}`);
       if (editing.kind === 'file') onOpenFile(target);
       return true;
     },
@@ -155,21 +155,21 @@ export const FileTree = forwardRef<TreeRef, FileTreeProps>(function FileTree(
       const oldName = from.split('/').pop() ?? '';
       if (trimmed === '' || trimmed === oldName) return true; // unchanged = cancel
       if (trimmed.includes('/')) {
-        onNotice('名称不能包含 /');
+        onNotice('Name cannot contain /');
         return false;
       }
       const to = `${parentOf(from).replace(/\/$/, '')}/${trimmed}`;
       try {
         await unwrap(await remote.rename(from, to));
       } catch (error) {
-        onNotice(`重命名失败: ${error instanceof Error ? error.message : String(error)}`);
+        onNotice(`Rename failed: ${error instanceof Error ? error.message : String(error)}`);
         return false;
       }
       await loadDir(parentOf(from));
       setEditing(null);
       setSelected(to);
       onRenamed(from, to);
-      onNotice(`已重命名 ${trimmed}`);
+      onNotice(`Renamed ${trimmed}`);
       return true;
     },
     [editing, remote, loadDir, parentOf, onRenamed, onNotice],
@@ -261,10 +261,10 @@ export const FileTree = forwardRef<TreeRef, FileTreeProps>(function FileTree(
   return (
     <div className="dshf-tree-scroll">
       {node === undefined ? null : node.entries === null ? (
-        <div className="dshf-tree-hint">{node.error ? `加载失败: ${node.error}` : '加载中…'}</div>
+        <div className="dshf-tree-hint">{node.error ? `Load failed: ${node.error}` : 'Loading...'}</div>
       ) : (
         <div className="dshf-tree-list">
-          {node.entries.length === 0 && editing?.mode !== 'create' && <div className="dshf-tree-hint">（空目录）</div>}
+          {node.entries.length === 0 && editing?.mode !== 'create' && <div className="dshf-tree-hint">(empty directory)</div>}
           {renderLevel(root, node.entries, 0)}
         </div>
       )}
@@ -279,7 +279,7 @@ function DirChildren({ node, depth, onRender }: {
   onRender: (path: string, entries: FileEntry[], depth: number) => React.ReactNode;
 }): JSX.Element | null {
   if (node === undefined || node.entries === null) {
-    return <div className="dshf-tree-hint" style={{ paddingLeft: `${8 + depth * 14}px` }}>{node?.error ?? '加载中…'}</div>;
+    return <div className="dshf-tree-hint" style={{ paddingLeft: `${8 + depth * 14}px` }}>{node?.error ?? 'Loading...'}\u003c/div\u003e
   }
   return <>{onRender(node.path, node.entries, depth)}</>;
 }

@@ -1,5 +1,5 @@
 /**
- * The file editor VIEW: renders inside the conversation center column
+ * "The file editor VIEW: renders inside the conversation center column`
  * (`conversation.view` slot, in the session body scroll area) — not a popup.
  * The sidebar tree loads a file into the shared store; this view displays and
  * edits the active file in place.
@@ -52,7 +52,7 @@ export function FileEditorView({ remote, t }: { remote: FileManagerRemote; t?: (
   const chrome = themeChrome(theme);
   const mdMode = useMdMode();
 
-  // While the "文件" view is the active conversation view, request the
+  // While the "File" view is the active conversation view, request the
   // sidebar tree panel to open; switching to another view closes it again.
   useEffect(() => {
     setEditorViewActive(true);
@@ -65,9 +65,9 @@ export function FileEditorView({ remote, t }: { remote: FileManagerRemote; t?: (
     try {
       await unwrap(await remote.writeText(active.path, active.content));
       markSaved(active.path);
-      setNotice(`已保存 ${active.path.split('/').pop()}`);
+      setNotice(`Saved ${active.path.split('/').pop()}`);
     } catch (error) {
-      setNotice(`保存失败: ${error instanceof Error ? error.message : String(error)}`);
+      setNotice(`Save failed: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setBusy(false);
     }
@@ -105,11 +105,11 @@ export function FileEditorView({ remote, t }: { remote: FileManagerRemote; t?: (
     return (
       <div className="dshf-editor-view" style={themeVars as React.CSSProperties}>
         <div className="dshf-editor-toolbar">
-          <span className="dshf-title">{t ? t('view.label') : '文件'}</span>
+          <span className="dshf-title">{t ? t('view.label') : 'File'}</span>
           <span className="dshf-spacer" />
           <ThemeButton />
         </div>
-        <div className="dshf-empty">{t ? t('view.empty') : '在左侧文件树中选择一个文件，即可在此编辑'}</div>
+        <div className="dshf-empty">{t ? t('view.empty') : 'Select a file in the sidebar tree to edit here.'}</div>
       </div>
     );
   }
@@ -126,7 +126,7 @@ export function FileEditorView({ remote, t }: { remote: FileManagerRemote; t?: (
           <button
             type="button"
             className="dshf-btn dshf-md-toggle"
-            title={mdMode === 'preview' ? '编辑源码' : '预览渲染效果'}
+            title={mdMode === 'preview' ? 'Edit source' : 'Preview render'}
             onClick={() => setMdMode(mdMode === 'preview' ? 'source' : 'preview')}
           >
             <MdModeIcon mode={mdMode} />
@@ -136,14 +136,14 @@ export function FileEditorView({ remote, t }: { remote: FileManagerRemote; t?: (
         <button
           type="button"
           className="dshf-btn"
-          title="保存 (Ctrl+S)"
+          title="Save (Ctrl+S)"
           disabled={!active.dirty || busy}
           onClick={() => void saveActive()}
-        >保存</button>
+        >Save</button>
         <button
           type="button"
           className="dshf-btn"
-          title="关闭当前文件"
+          title="Close current file"
           disabled={tabs.length <= 1}
           onClick={closeEditor}
         >✕</button>
@@ -165,16 +165,16 @@ export function FileEditorView({ remote, t }: { remote: FileManagerRemote; t?: (
                 <button
                   type="button"
                   className="dshf-tab-chip-close"
-                  aria-label={`关闭 ${t.path.split('/').pop()}`}
-                  title="关闭"
-                  onClick={() => closeTab(t.path)}
+                  aria-label=`Close ${t.path.split('/').pop()}`
+                  title="Close"
+                  onClick={closeTab}
                 >✕</button>
               </span>
             ))}
           </span>
         )}
         <span className="dshf-status-meta">
-          <span className="dshf-status-busy">{busy ? '…' : ''}</span>
+          <span className="dshf-status-busy">{busy ? '...' : ''}</span>
           <span className={cx('dshf-status-notice', notice === null && 'dshf-hidden')}>{notice ?? ''}</span>
         </span>
       </div>
@@ -233,7 +233,7 @@ function ThemeButton(): JSX.Element {
         setImportError(error instanceof Error ? error.message : String(error));
       }
     };
-    reader.onerror = () => setImportError('读取文件失败');
+    reader.onerror = () => setImportError('Reading file failed');
     reader.readAsText(file);
   };
 
@@ -416,7 +416,7 @@ function EditorPane({ path, content, onChange, theme }: {
   }, [mode, monacoLib, theme.background, theme.foreground, theme.fontSize]);
 
   if (mode === 'loading') {
-    return <div className="dshf-empty">编辑器加载中…</div>;
+    return <div className="dshf-empty">Editor loading...</div>;
   }
 
   if (mode === 'monaco') {

@@ -4,3 +4,6 @@ dist/
 .DS_Store
 *.tgz
 pnpm-lock.yaml
+
+.idea/
+.vscode/
