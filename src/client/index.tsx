@@ -4,12 +4,12 @@
  * Responsibilities:
  *  1. Mount the `fileManager` Typert Remote contribution so
  *     `ctx.remote.fileManager.*` becomes callable.
- *  2. Register a "文件" button into the sidebar footer action list.
+ *  2. Register a "Files" button into the sidebar footer action list.
  *  3. Toggle the file-manager panel: while open, we register a shadow entry
  *     into the `sidebar.workspaces` slot at priority -1 (the workspace
  *     browser's own entry sits at default priority 0, so ours wins the cell);
  *     closing disposes the entry and the workspace browser returns.
- *  4. Register the file EDITOR as a `conversation.view` tab ("文件"). The
+ *  4. Register the file EDITOR as a `conversation.view` tab ("Files"). The
  *     sidebar tree only browses; clicking a file loads it into the shared
  *     store and the editor renders IN the conversation center column's scroll
  *     body (beside chat / trajectory), never as a popup.
@@ -39,11 +39,11 @@ if (typeof document !== 'undefined' && document.querySelector(`style[data-plugin
 const NS = 'dshFile';
 
 const zh = {
-  'toggle.label': '文件',
-  'toggle.open': '打开文件管理器',
-  'toggle.close': '关闭文件管理器',
-  'view.label': '文件',
-  'view.empty': '在左侧文件树中选择一个文件，即可在此编辑',
+  'toggle.label': 'Files',
+  'toggle.open': 'Open file manager',
+  'toggle.close': 'Close file manager',
+  'view.label': 'Files',
+  'view.empty': 'Select a file in the sidebar tree to edit this file',
 };
 
 const en: Record<keyof typeof zh, string> = {
@@ -113,9 +113,9 @@ export function apply(ctx: Context) {
 
   const togglePanel = () => (open ? closePanel() : openPanel());
 
-  // ── sidebar visibility sync with the center "文件" view ───────────────────
-  // When the "文件" conversation view becomes active, open the sidebar tree
-  // panel automatically; when the view is switched away (e.g. "对话"), close
+  // ── sidebar visibility sync with the center "Files" view ───────────────────
+  // When the "Files" conversation view becomes active, open the sidebar tree
+  // panel automatically; when the view is switched away (e.g. "Chat"), close
   // it again. openPanel/closePanel are idempotent, so this is safe to run on
   // every activation change. Manual footer-button toggles still win while the
   // view stays active.
@@ -154,7 +154,7 @@ export function apply(ctx: Context) {
   }, FileToggleButton));
 
   /**
-   * Bring the center-column "文件" view to the front after a file opens.
+   * Bring the center-column "Files" view to the front after a file opens.
    * The conversation view tabs are owned by dsh-client-ui-conversation's
    * internal chat store with no public setView API, so we click the matching
    * session-header tab (role="tab") by its localized label — the same
@@ -187,7 +187,7 @@ function FileToggleButton(props: {
   isOpen: () => boolean;
 }): JSX.Element {
   const { wide, t, onToggle, isOpen } = props;
-  const label = t ? t('toggle.label') : '文件';
+  const label = t ? t('toggle.label') : 'Files';
   const title = t ? (isOpen() ? t('toggle.close') : t('toggle.open')) : undefined;
   return (
     <button
@@ -205,9 +205,9 @@ function FileToggleButton(props: {
 }
 
 /**
- * DSH 工作区打开图标（folder_open_16 outline），内联自
- * @deepseek-ai/dsh-client-ui-primitives 的 IconFolderOpenOutline16，
- * 避免给插件新增运行时依赖；fill=currentColor 随主题/激活态变色。
+* DSH workspace open icon (folder_open_16 outline), inlined from
+ * from @deepseek-ai/dsh-client-ui-primitives's IconFolderOpenOutline16,
+ * avoid adding runtime dependencies to the plugin; fill=currentColor changes with theme/active state.
  */
 function FolderOpenIcon(props: { size?: number }): JSX.Element {
   const size = props.size ?? 16;

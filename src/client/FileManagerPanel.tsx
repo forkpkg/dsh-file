@@ -1,7 +1,7 @@
 /**
  * File manager SIDEBAR panel: the tree-only view shown while the file manager
  * is open. Clicking a file loads it into the shared store; the center-column
- * "文件" view (`conversation.view`) then displays and edits it inside the
+ * "Files" view (`conversation.view`) then displays and edits it inside the
  * page — never a popup, never inside the narrow sidebar.
  *
  * On mount it resolves the CURRENT conversation's workspace directory from the
@@ -22,9 +22,9 @@ function cx(...parts: Array<string | false | null | undefined>): string {
 }
 
 /**
- * 工具条图标，内联自 @deepseek-ai/dsh-client-ui-primitives
- * （IconPlusOutline16 / IconProjectAddOutline16），与 DSH 自家 UI 同一套
- * 视觉；fill=currentColor 随主题变色。避免给插件新增运行时依赖。
+ /* Toolbar icons inlined from @deepseek‑ai/dsh‑client‑ui‑primitives */
+ * (IconPlusOutline16 / IconProjectAddOutline16), part of the DSH UI.
+ * Visual; fill=currentColor changes with theme. Avoid adding runtime dependencies to the plugin.
  */
 function IconPlus(props: { size?: number }): JSX.Element {
   const size = props.size ?? 16;
@@ -52,7 +52,7 @@ interface FileManagerPanelProps {
   onClose: () => void;
   /** Standard sidebar.workspaces kit: read the current session's workspace. */
   useSessions?: FileManagerSessionHook;
-  /** Called after a file tab opens: bring the center "文件" view to the front. */
+  /** Called after a file tab opens: bring the center "Files" view to the front. */
   onFileOpened?: () => void;
 }
 
@@ -93,9 +93,9 @@ export function FileManagerPanel({ remote, onClose, useSessions, onFileOpened }:
           // Tell the editor store which workspace these files belong to. This
           // clears pristine editor state on a genuine workspace SWITCH (so
           // stale tabs from a previous workspace don't linger), while treating
-          // the same root as a no-op — so toggling to the "对话" view and back
+          // the same root as a no-op — so toggling to the "Chat" view and back
           // keeps all open tabs and unsaved edits. The panel's own unmount must
-          // NOT wipe editor state: the panel unmounts whenever the "文件" view
+          // NOT wipe editor state: the panel unmounts whenever the "Files" view
           // loses focus, which is a normal navigation, not a close gesture.
           setWorkspaceRoot(path);
         }
@@ -109,7 +109,7 @@ export function FileManagerPanel({ remote, onClose, useSessions, onFileOpened }:
   }, [remote, sessionCwd]);
 
   // NOTE: do NOT reset editor state on panel unmount. The panel unmounts
-  // whenever the "文件" conversation view loses focus (the sidebar sync in
+  // whenever the "Files" conversation view loses focus (the sidebar sync in
   // index.tsx closes it), which is normal navigation — wiping tabs here would
   // silently discard unsaved edits. Editor state is reset only when the
   // workspace root actually changes (see setWorkspaceRoot above).
@@ -127,7 +127,7 @@ export function FileManagerPanel({ remote, onClose, useSessions, onFileOpened }:
         openTab({ path, content: value.content, savedContent: value.content, mtimeMs: value.mtimeMs, dirty: false });
         onFileOpened?.();
       } catch (error) {
-        handleNotice(`打开失败: ${error instanceof Error ? error.message : String(error)}`);
+        handleNotice(`Open failed: ${error instanceof Error ? error.message : String(error)}`);
       } finally {
         setBusy(false);
       }
@@ -166,9 +166,9 @@ export function FileManagerPanel({ remote, onClose, useSessions, onFileOpened }:
         await unwrap(await remote.delete(path));
         removeTabs([path]);
         treeRef.current?.refresh();
-        handleNotice('已删除');
+        handleNotice('Deleted');
       } catch (error) {
-        handleNotice(`删除失败: ${error instanceof Error ? error.message : String(error)}`);
+        handleNotice(`Delete failed: ${error instanceof Error ? error.message : String(error)}`);
       } finally {
         setBusy(false);
       }
@@ -177,7 +177,7 @@ export function FileManagerPanel({ remote, onClose, useSessions, onFileOpened }:
   );
 
   const title = useMemo(() => {
-    if (root === null) return '…';
+    if (root === null) return '...';
     return root.split('/').filter(Boolean).pop() || '/';
   }, [root]);
 
@@ -186,9 +186,9 @@ export function FileManagerPanel({ remote, onClose, useSessions, onFileOpened }:
       <div className="dshf-toolbar">
         <span className="dshf-title" title={root ?? ''}>{title}</span>
         <span className="dshf-spacer" />
-        <button type="button" className="dshf-btn dshf-btn-icon" title="新建文件" aria-label="新建文件" onClick={() => handleCreate('file')}><IconPlus /></button>
-        <button type="button" className="dshf-btn dshf-btn-icon" title="新建目录" aria-label="新建目录" onClick={() => handleCreate('directory')}><IconFolderAdd /></button>
-        <button type="button" className="dshf-btn dshf-btn-icon" title="关闭文件管理器" aria-label="关闭文件管理器" onClick={onClose}>✕</button>
+        <button type="button" className="dshf-btn dshf-btn-icon" title="Create file" aria-label="Create file" onClick={() => handleCreate('file')}><IconPlus /></button>
+        <button type="button" className="dshf-btn dshf-btn-icon" title="Create folder" aria-label="Create folder" onClick={() => handleCreate('directory')}><IconFolderAdd /></button>
+        <button type="button" className="dshf-btn dshf-btn-icon" title="Close file manager" aria-label="Close file manager" onClick={onClose}>✕</button>
       </div>
 
       {rootError !== null && <div className="dshf-error">{rootError}</div>}
@@ -208,10 +208,10 @@ export function FileManagerPanel({ remote, onClose, useSessions, onFileOpened }:
       </div>
 
       <div className="dshf-status">
-        <span className="dshf-status-busy">{busy ? '…' : ''}</span>
+        <span className="dshf-status-busy">{busy ? '...' : ''}</span>
         <span className={cx('dshf-status-notice', notice === null && 'dshf-hidden')}>{notice ?? ''}</span>
         <span className="dshf-spacer" />
-        <span className="dshf-status-hint">点文件后在上方「文件」标签中编辑</span>
+        <span className="dshf-status-hint">After clicking a file, edit it in the 'Files' tab above</span>
       </div>
 
       {pendingDelete !== null && (
@@ -252,12 +252,12 @@ function DeleteConfirmDialog({ path, onConfirm, onCancel }: {
         }
       }}
     >
-      <div className="dshf-modal" role="alertdialog" aria-modal="true" aria-label="删除确认" onClick={(e) => e.stopPropagation()}>
-        <div className="dshf-modal-title">删除 {name}</div>
-        <div className="dshf-modal-body">确定删除 {name} 吗？此操作不可撤销。</div>
+      <div className="dshf-modal" role="alertdialog" aria-modal="true" aria-label="Delete confirmation" onClick={(e) => e.stopPropagation()}>
+        <div className="dshf-modal-title">Delete {name}</div>
+        <div className="dshf-modal-body">Are you sure you want to delete {name}? This action cannot be undone.</div>
         <div className="dshf-modal-actions">
-          <button type="button" className="dshf-btn" onClick={onCancel}>取消</button>
-          <button ref={confirmRef} type="button" className="dshf-btn dshf-btn-danger" onClick={onConfirm}>删除</button>
+          <button type="button" className="dshf-btn" onClick={onCancel}>Cancel</button>
+          <button ref={confirmRef} type="button" className="dshf-btn dshf-btn-danger" onClick={onConfirm}>Delete</button>
         </div>
       </div>
     </div>

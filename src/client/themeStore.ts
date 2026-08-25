@@ -31,8 +31,8 @@ export const EDITOR_THEME_PRESET_ORDER: readonly string[] = ['light', 'dark', 'o
 
 /** Human labels for the presets. */
 export const EDITOR_THEME_PRESET_LABELS: Record<string, string> = {
-  light: '浅色',
-  dark: '深色',
+    light: 'Light',
+    dark: 'Dark',
   'one-dark': 'One Dark',
   github: 'GitHub',
 };
